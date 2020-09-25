@@ -34,7 +34,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="gambar" accept="image/*" onchange="resizeImage()" required>
+                                    <input type="file" class="custom-file-input" id="gambar" accept="image/*" onChange="resizeImage()" required>
                                     <label class="custom-file-label" for="customFile" id="inputFile" >Input File</label>
                                 </div>
                             </div>
@@ -171,16 +171,16 @@
         var stegger = new f5stego(stag);
         function encodedForm() {
             document.getElementById("customTextFileButton").hidden = false;
-            document.getElementById("resultFile").hidden = true;
-            document.getElementById("resultTextFile").hidden = true;
+            //document.getElementById("resultFile").hidden = true;
+            //document.getElementById("resultTextFile").hidden = true;
             resetForm();
             
         }
 
         function decodedForm() {
             document.getElementById("customTextFileButton").hidden = true;
-            document.getElementById("resultFile").hidden = true;
-            document.getElementById("resultTextFile").hidden = true;
+            //document.getElementById("resultFile").hidden = true;
+            //document.getElementById("resultTextFile").hidden = true;
             resetForm();
             
         }
@@ -253,7 +253,7 @@
             document.getElementById("eksekusi").disabled = false;
             
             if(document.getElementById("customTextFileButton").hidden == false){
-                
+                console.log("1");
                 var maxWidth = 800;
                 var maxHeight = 600;
                 
@@ -268,29 +268,32 @@
                     newImage.width = 400;
                     newImage.height = 200;
                     newImage.onload  = function () {
-                        var currHeight = this.height;
-                        var currWidth = this.width;
-                        var something = calculateAspectRatioFit(currWidth, currHeight,maxWidth,maxHeight);
-                        console.log(currWidth,currHeight);
-                        console.log(something);
-                        var elem = document.createElement('canvas');
-                        elem.width = something["width"];
-                        elem.height = something["height"];
-                        var ctx = elem.getContext('2d');
-                        ctx.drawImage(newImage, 0, 0, something["width"], something["height"]);
-                        ctx.canvas.toBlob((blob)=>{
-                                gmbr = new File([blob],"tmp",{
-                                type: "image/jpeg",
-                                lastModified:Date.now()
-                            });
-                            getImage();
-                        },'image/jpeg',1);
+                        if(document.getElementById("customTextFileButton").hidden == false){
+                            var currHeight = this.naturalHeight;
+                            var currWidth = this.naturalWidth;
+                            var something = calculateAspectRatioFit(currWidth, currHeight,maxWidth,maxHeight);
+                            console.log(currWidth,currHeight);
+                            console.log(something);
+                            var elem = document.createElement('canvas');
+                            elem.width = something["width"];
+                            elem.height = something["height"];
+                            var ctx = elem.getContext('2d');
+                            ctx.drawImage(newImage, 0, 0, something["width"], something["height"]);
+                            ctx.canvas.toBlob((blob)=>{
+                                    gmbr = new File([blob],"tmp",{
+                                    type: "image/jpeg",
+                                    lastModified:Date.now()
+                                });
+                                getImage();
+                            },'image/jpeg',1);
+                        }
                     },reader.onerror = err =>console.log(err);
                 };
+                
 
             }else if(document.getElementById("customTextFileButton").hidden == true){
                 gmbr = document.getElementById("gambar").files[0];
-                
+                console.log("2");
                 var reader = new FileReader();
                 reader.readAsDataURL(gmbr);
                 reader.onload = function (e){
@@ -309,9 +312,9 @@
         
         function getImage(){
             
-            var demoImage = document.getElementById("image");
             var file = gmbr;
             console.log(file);
+            
             
             reader = new FileReader();
             reader.onload = function (e){
@@ -326,7 +329,6 @@
         function getData(){
             
             
-            var demoImage = document.getElementById("image");
             var file = document.getElementById("text").files[0];
             document.getElementById("inputText").innerHTML = file.name;
             var reader = new FileReader();
