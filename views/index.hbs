@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+     -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/f5stego.js"></script>
+    <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <title>Steganography</title>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <!-- Form -->
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center"></h5>
+                        <form action="send" method="post" enctype="multipart/form-data">
+                            <div class="form-row form-group">
+                                <div class="col">
+                                    <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="encodedForm()">Encoded</button>
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="decodedForm()">Decoded</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="gambar" accept="image/*" name="gambarEncode" onchange="loadFile(event)" required>
+                                    <label class="custom-file-label" for="customFile" id="inputFile" >Input File  </label>
+                                </div>
+                            </div>
+                            <div class="form-group" id="customTextFileButton" hidden>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="text" accept=".txt" onchange="loadFile2(event)" name="fileEncode">
+                                    <label class="custom-file-label" for="customFile" id="inputText">Input Text File </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="card-body">
+                                    
+                                    <img src="" id="imagex">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <input type="submit" class="btn btn-primary btn-lg btn-block" id="eksekusi" value="EXTRACT IT" >
+                                </div>
+                            </div>
+                            <div class="form-row form-group" id="resultFile" hidden>
+                                <div class="col-md-9 .offset-md-3">
+                                    <input class="form-control" type="text" placeholder="File Name" readonly>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary btn-block">Download</button>
+                                </div>
+                            </div>
+                            <div class="form-row form-group" id="resultTextFile" hidden>
+                                <div class="col-md-9 .offset-md-3">
+                                    <input class="form-control" type="text" placeholder="Text File Name" readonly>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary btn-block">Download</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div> <!-- .form -->
+            </div>
+        </div>
+
+        <!-- Modal, just in case -->
+        <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalTitle">Success</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Files can be downloaded.
+                    </div>
+                </div>
+            </div>
+        </div> <!-- .modal -->
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!-- Hiding buttons based on encoding/decoding-->
+    <script>
+        var loadFile = function(event) {
+            var output = document.getElementById('imagex');
+            document.getElementById("inputFile").innerHTML = event.target.files[0].name;
+            output.src = URL.createObjectURL(event.target.files[0])
+            output.width = 400
+            output.height = 200
+            output.onload = function() {
+                URL.revokeObjectURL(output.src) // free memory
+            }
+        }
+        var loadFile2 = function(event) {
+            
+            var name = event.target.files[0].name
+            console.log(name)
+            document.getElementById("inputText").innerHTML = name;
+            
+        }
+        
+        function encodedForm() {
+            document.getElementById("customTextFileButton").hidden = false;
+            document.getElementById("inputText").required = true;
+            document.getElementById("eksekusi").value = "EMBED IT"
+            //document.getElementById("resultFile").hidden = true;
+            //document.getElementById("resultTextFile").hidden = true;
+            resetForm();
+            
+        }
+
+        function decodedForm() {
+            document.getElementById("customTextFileButton").hidden = true;
+            document.getElementById("inputText").required = false;
+            document.getElementById("eksekusi").value = "EXTRACT IT"
+            //document.getElementById("resultFile").hidden = true;
+            //document.getElementById("resultTextFile").hidden = true;
+            resetForm();
+            
+        }
+        function resetForm(){
+            document.getElementById("inputFile").innerHTML = "Input File";
+            document.getElementById("inputText").innerHTML = "Input Text File";
+            document.getElementById("imagex").src = "";
+            document.getElementById("imagex").width = 0;
+            document.getElementById("imagex").height = 0;
+            document.getElementById("gambar").files[0] = "";
+            document.getElementById("text").files[0] = "";
+            document.getElementById("gambar").value = "";
+            document.getElementById("text").value = "";
+            //document.getElementById("eksekusi").disabled = true;
+        }
+        
+
+          
+    </script>
+
+</body>
+</html>l
